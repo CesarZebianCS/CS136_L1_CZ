@@ -29,37 +29,6 @@ bool isValidRecord(const CarRecord& temp, string& errorMsg);
 void printValidRecords();
 void printInvalidRecords();
 
-int main() {
-    getData();
-
-    int choice;
-    do {
-        cout << "\nMenu:\n";
-        cout << "1. Print all valid car records\n";
-        cout << "2. Print invalid records\n";
-        cout << "3. Quit\n";
-        cout << "Enter choice: ";
-        cin >> choice;
-
-        switch (choice) {
-        case 1:
-            printValidRecords();
-            break;
-        case 2:
-            printInvalidRecords();
-            break;
-        case 3:
-            cout << "Goodbye!\n";
-            break;
-        default:
-            cout << "Invalid choice. Try again.\n";
-        }
-
-    } while (choice != 3);
-
-    return 0;
-}
-
 // Read file and validate records
 void getData() {
     ifstream infile(INPUT_FILE);
@@ -67,29 +36,29 @@ void getData() {
 
     if (!infile) {
         cout << "Error opening input file.\n";
-        exit(EXIT_FAILURE);
     }
-    if (!errorfile) {
+    else if (!errorfile) {
         cout << "Error opening error file.\n";
-        exit(EXIT_FAILURE);
     }
-
-    CarRecord temp;
-    while (infile >> temp.carID >> temp.model >> temp.quantity >> temp.price) {
-        string errorMsg = "";
-        if (isValidRecord(temp, errorMsg)) {
-            if (numValid < MAX_RECORDS)
-                validCars[numValid++] = temp;
-        }
-        else {
-            temp.errorMessage = errorMsg;
-            if (numInvalid < MAX_RECORDS) {
-                invalidCars[numInvalid++] = temp;
-                errorfile << setw(10) << left << temp.carID
-                    << setw(12) << left << temp.model
-                    << setw(8) << right << temp.quantity
-                    << setw(12) << right << fixed << setprecision(2) << temp.price
-                    << "   " << temp.errorMessage << endl;
+    else {
+        CarRecord temp;
+        while (infile >> temp.carID >> temp.model >> temp.quantity >> temp.price) {
+            string errorMsg = "";
+            if (isValidRecord(temp, errorMsg)) {
+                if (numValid < MAX_RECORDS) {
+                    validCars[numValid++] = temp;
+                }
+            }
+            else {
+                temp.errorMessage = errorMsg;
+                if (numInvalid < MAX_RECORDS) {
+                    invalidCars[numInvalid++] = temp;
+                    errorfile << setw(10) << left << temp.carID
+                              << setw(12) << left << temp.model
+                              << setw(8) << right << temp.quantity
+                              << setw(12) << right << fixed << setprecision(2) << temp.price
+                              << "   " << temp.errorMessage << endl;
+                }
             }
         }
     }
@@ -126,79 +95,76 @@ bool isValidRecord(const CarRecord& temp, string& errorMsg) {
 void printValidRecords() {
     cout << "\nValid Car Records:\n";
     cout << setw(10) << left << "CarID"
-        << setw(12) << left << "Model"
-        << setw(8) << right << "Quantity"
-        << setw(12) << right << "Price" << endl;
+         << setw(12) << left << "Model"
+         << setw(8) << right << "Quantity"
+         << setw(12) << right << "Price" << endl;
     cout << "-------------------------------------------\n";
 
     for (int i = 0; i < numValid; i++) {
         cout << setw(10) << left << validCars[i].carID
-            << setw(12) << left << validCars[i].model
-            << setw(8) << right << validCars[i].quantity
-            << setw(12) << right << fixed << setprecision(2) << validCars[i].price
-            << endl;
+             << setw(12) << left << validCars[i].model
+             << setw(8) << right << validCars[i].quantity
+             << setw(12) << right << fixed << setprecision(2) << validCars[i].price
+             << endl;
     }
 }
 
 // Print invalid records
 void printInvalidRecords() {
+    cout << "\nInvalid Car Records:\n";
+
     if (numInvalid == 0) {
         cout << "No invalid records.\n";
-        return;
     }
+    else {
+        cout << setw(10) << left << "CarID"
+             << setw(12) << left << "Model"
+             << setw(8) << right << "Quantity"
+             << setw(12) << right << "Price"
+             << "   Errors" << endl;
+        cout << "---------------------------------------------------------------\n";
 
-    cout << "\nInvalid Car Records:\n";
-    cout << setw(10) << left << "CarID"
-        << setw(12) << left << "Model"
-        << setw(8) << right << "Quantity"
-        << setw(12) << right << "Price"
-        << "   Errors" << endl;
-    cout << "---------------------------------------------------------------\n";
-
-    for (int i = 0; i < numInvalid; i++) {
-        cout << setw(10) << left << invalidCars[i].carID
-            << setw(12) << left << invalidCars[i].model
-            << setw(8) << right << invalidCars[i].quantity
-            << setw(12) << right << fixed << setprecision(2) << invalidCars[i].price
-            << "   " << invalidCars[i].errorMessage << endl;
+        for (int i = 0; i < numInvalid; i++) {
+            cout << setw(10) << left << invalidCars[i].carID
+                 << setw(12) << left << invalidCars[i].model
+                 << setw(8) << right << invalidCars[i].quantity
+                 << setw(12) << right << fixed << setprecision(2) << invalidCars[i].price
+                 << "   " << invalidCars[i].errorMessage << endl;
+        }
     }
 }
-/*
-Menu:
-1. Print all valid car records
-2. Print invalid records
-3. Quit
-Enter choice: 1
 
-Valid Car Records:
-CarID     Model       Quantity       Price
--------------------------------------------
-MPKZ126587RX5               51  1663000.00
-ZZOO123456RX7                3    30000.00
+// Main program
+int main() {
+    getData();
 
-Menu:
-1. Print all valid car records
-2. Print invalid records
-3. Quit
-Enter choice: 2
+    int choice = 0;
+    while (choice != 3) {
+        cout << "\nMenu:\n";
+        cout << "1. Print all valid car records\n";
+        cout << "2. Print invalid records\n";
+        cout << "3. Quit\n";
+        cout << "Enter choice: ";
+        cin >> choice;
 
-Invalid Car Records:
-CarID     Model       Quantity       Price   Errors
----------------------------------------------------------------
-BPAZ3478  Tucker48           5  1600000.00   Invalid ID length;
-35KMOP32  RX3                5     3000.00   Invalid ID length; Price must be above 24995.00;
-AB12345678X1                10    25000.00   Model too short;
-AA12B3456 RX                 0    26000.00   Invalid ID length; Model too short; Quantity must be above 0;
-CC34567890RX9                7    20000.00   Price must be above 24995.00;
-DD12EF345 RX10               2    50000.00   Invalid ID length;
+        if (choice == 1) {
+            printValidRecords();
+        }
+        else if (choice == 2) {
+            printInvalidRecords();
+        }
+        else if (choice == 3) {
+            cout << "Goodbye!\n";
+        }
+        else {
+            cout << "Invalid choice. Try again.\n";
+        }
+    }
 
-Menu:
-1. Print all valid car records
-2. Print invalid records
-3. Quit
-Enter choice: 3
-Goodbye!
+    /*
 
-C:\Users\cesar\source\repos\Lab#1\x64\Debug\Lab#1.exe (process 2296) exited with code 0.
-Press any key to close this window . . .
+    return 0;
+}
+
+
 */
